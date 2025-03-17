@@ -1,0 +1,94 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 280 30% 98%;
+    --foreground: 240 10% 3.9%;
+    --card: 0 0% 100%;
+    --card-foreground: 240 10% 3.9%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 260 100% 88%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 270 100% 97%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 260 89% 78%;
+    --accent-foreground: 240 5.9% 10%;
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 260 89% 78%;
+    --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 260 20% 10%;
+    --foreground: 0 0% 98%;
+    --card: 260 20% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 260 20% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 260 100% 88%;
+    --primary-foreground: 260 20% 10%;
+    --secondary: 260 20% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 260 20% 16%;
+    --muted-foreground: 260 10% 70%;
+    --accent: 260 89% 78%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 260 20% 20%;
+    --input: 260 20% 20%;
+    --ring: 260 89% 78%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+.section-padding {
+  @apply py-24 md:py-32; /* Augmentation du padding vertical */
+}
+
+.section-divider {
+  @apply h-16 md:h-24; /* Nouvel élément pour ajouter de l'espace entre les sections */
+}
+
+.container-padding {
+  @apply px-4 sm:px-6 lg:px-8;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.reveal.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.staggered-item {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+.staggered-item.active {
+  opacity: 1;
+  transform: translateY(0);
+}
+
