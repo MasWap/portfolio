@@ -1,6 +1,8 @@
 "use client"
 import Image from "next/image"
 import Link from "next/link"
+import emailjs from 'emailjs-com';
+import { FormEvent } from 'react';
 import { ArrowRight, Download, ExternalLink, Github, Mail, Send, Linkedin, Instagram } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
@@ -13,42 +15,38 @@ import SmoothScrollLink from "@/hooks/smooth-scroll-link"
 const projects = [
   {
     id: 1,
-    title: "E-commerce Dashboard",
+    title: "Site de chambre d'hôtes | Maison Tobias",
     description:
-      "Une interface d'administration pour une plateforme e-commerce avec des graphiques et des analyses en temps réel.",
+      "Site réalisé bénévolement, pour réserver des chambres dans une maison d'hôte. Le site est également muni d'une interface d'administration.",
     image: "/placeholder.svg?height=300&width=500",
-    technologies: ["React", "Next.js", "TailwindCSS", "Chart.js"],
-    github: "https://github.com",
-    demo: "https://example.com",
+    technologies: ["React", "Next.js", "TailwindCSS"],
+    demo: "https://maisontobias.fr",
   },
   {
     id: 2,
-    title: "Application de Gestion de Tâches",
+    title: "Site de reservation de voyages | TentationVoyage",
     description:
-      "Une application de gestion de tâches avec des fonctionnalités de drag-and-drop et de collaboration en temps réel.",
-    image: "/placeholder.svg?height=300&width=500",
-    technologies: ["Vue.js", "Firebase", "Tailwind CSS"],
-    github: "https://github.com",
-    demo: "https://example.com",
+      "Site réalisé lors d'un stage en BTS. Il permet de réserver des voyages, de gérer des listes de diffusions, des utilisateurs, des widgets, via une interface d'administration.",
+    image: "/tenta.png?height=300&width=500",
+    technologies: ["React", "Next.js", "TailwindCSS"],
+    demo: "https://www.tentationvoyage.fr/",
   },
   {
     id: 3,
-    title: "API RESTful",
+    title: "Compteur de trous | Hole counter",
     description:
-      "Une API RESTful complète pour une application de réservation avec authentification JWT et documentation Swagger.",
+      "Application permettant de compter les troues dans une cible pour compter le nombre de points.",
     image: "/placeholder.svg?height=300&width=500",
-    technologies: ["Node.js", "Express", "MongoDB", "Swagger"],
-    github: "https://github.com",
-    demo: "https://example.com",
+    technologies: ["Python", "Flask", "OpenCV", "IA"],
   },
   {
     id: 4,
-    title: "Portfolio Personnel",
+    title: "Site vitrine | Portfolio",
     description:
       "Un portfolio moderne et interactif développé avec Next.js et TailwindCSS pour présenter mes projets et compétences.",
-    image: "/placeholder.svg?height=300&width=500",
-    technologies: ["Next.js", "TailwindCSS", "Framer Motion"],
-    github: "https://github.com",
+    image: "/portfolio.png?height=300&width=500",
+    technologies: ["React", "Next.js", "TailwindCSS"],
+    github: "https://github.com/MasWap/portfolio",
     demo: "https://example.com",
   },
 ]
@@ -57,7 +55,7 @@ const projects = [
 const skills = [
   {
     category: "Développement",
-    items: ["PHP", "JS", "C#", "VB.NET", "Java", "Python", "SQL"],
+    items: ["PHP", "JS", "React", "Python", "SQL", "Bash"],
   },
   {
     category: "Infrastructure et DevOps",
@@ -73,7 +71,7 @@ const skills = [
   },
   {
     category: "Backend et API",
-    items: ["Framework (Symfony, Express.js)", "Base de données (PostgreSQL)", "Développement d'API (Postman, Swagger)", "Monitoring (Prometheus)"],
+    items: ["Framework (Symfony, Express.js, Next.js)", "Base de données (PostgreSQL)", "Développement d'API (Postman, Swagger)", "Monitoring (Prometheus)"],
   },
   {
     category: "Communication et Travail d'Équipe",
@@ -81,41 +79,33 @@ const skills = [
   },
   {
     category: "Bénévolat",
-    items: ["Réalisation de sites web (maison d'hôtes)"],
+    items: ["Réalisation de sites web (maison d'hôtes) maisontobias.fr"],
   },
 ]
 
-// Données fictives pour les repos GitHub
-const githubRepos = [
-  {
-    name: "next-portfolio",
-    description: "Portfolio personnel développé avec Next.js et TailwindCSS",
-    stars: 12,
-    forks: 5,
-    language: "TypeScript",
-  },
-  {
-    name: "react-dashboard",
-    description: "Dashboard d'administration avec React et Chart.js",
-    stars: 45,
-    forks: 12,
-    language: "JavaScript",
-  },
-  {
-    name: "node-api-starter",
-    description: "Boilerplate pour API Node.js avec Express et MongoDB",
-    stars: 78,
-    forks: 23,
-    language: "JavaScript",
-  },
-]
+const sendEmail = (e: FormEvent<HTMLFormElement>) => {
+  e.preventDefault();
+
+  emailjs.sendForm(
+    process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
+    process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
+    e.target as HTMLFormElement,
+    process.env.NEXT_PUBLIC_EMAILJS_USER_ID
+  )
+    .then((result) => {
+        console.log(result.text);
+    }, (error) => {
+        console.log(error.text);
+    });
+
+  e.target.reset();
+};
 
 export default function Home() {
   const heroRef = useScrollReveal()
   const aboutRef = useScrollReveal()
   const skillsRef = useScrollReveal({ staggered: true, staggerDelay: 100 })
   const projectsRef = useScrollReveal({ staggered: true, staggerDelay: 200 })
-  const githubRef = useScrollReveal()
   const contactRef = useScrollReveal()
 
   return (
@@ -130,13 +120,13 @@ export default function Home() {
             <div className="reveal">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
                 <Link href="#home">
-                Hello, je suis <span className="text-accent">Lilian Layrac</span>
+                  Hello, je suis <span className="text-accent">Lilian Layrac</span>
                 </Link>
               </h1>
               <p className="text-xl md:text-2xl mb-8 text-foreground/80">Développeur Web Full Stack</p>
               <p className="text-base md:text-lg mb-10 text-foreground/70 max-w-lg">
-              Avec une appétence particulière pour le développement informatique et l'univers de l'IT,
-              je vous présente mes compétences et mon parcours dans ce Portfolio à mon effigie.
+                Avec une appétence particulière pour le développement informatique et l'univers de l'IT,
+                je vous présente mes compétences et mon parcours dans ce Portfolio à mon effigie.
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button asChild size="lg" className="rounded-full">
@@ -154,25 +144,25 @@ export default function Home() {
               </div>
             </div>
             <div className="flex justify-center lg:justify-end reveal">
-  <div className="relative w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-primary shadow-xl group">
-    {/* Première image */}
-    <Image
-      src="/me.jpeg?height=400&width=400"
-      alt="Moi"
-      fill
-      className="object-cover scale-110 absolute top-0 left-0"
-      priority
-    />
-    {/* Deuxième image */}
-    <Image
-      src="/mev2.jpeg?height=400&width=400"
-      alt="Moi v2"
-      fill
-      className="object-cover scale-110 absolute top-0 left-2 transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 translate-x-[10px]"
-      priority
-    />
-  </div>
-</div>
+              <div className="relative w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-primary shadow-xl group">
+                {/* Première image */}
+                <Image
+                  src="/me.jpeg?height=400&width=400"
+                  alt="Moi"
+                  fill
+                  className="object-cover scale-110 absolute top-0 left-0"
+                  priority
+                />
+                {/* Deuxième image */}
+                <Image
+                  src="/mev2.jpeg?height=400&width=400"
+                  alt="Moi v2"
+                  fill
+                  className="object-cover scale-110 absolute top-0 left-2 transition-opacity duration-500 ease-in-out opacity-0 group-hover:opacity-100 translate-x-[10px]"
+                  priority
+                />
+              </div>
+            </div>
 
 
           </div>
@@ -184,37 +174,37 @@ export default function Home() {
 
       {/* About Section */}
       <section id="about" className="section-padding bg-secondary dark:bg-secondary/50">
-        <div className="container" ref={aboutRef}>
+        <div className="container pb-40" ref={aboutRef}>
           <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">
             <Link href="#about">
               À Propos
             </Link>
-            </h2>
+          </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="reveal">
               <h3 className="text-2xl font-semibold mb-6">Mon Parcours</h3>
               <p className="mb-6 text-foreground/80">
-                Mon parcours académique a débuté avec un Baccalauréat en Sciences et Technologies du Management et de la Gestion, 
+                Mon parcours académique a débuté avec un Baccalauréat en Sciences et Technologies du Management et de la Gestion,
                 option Systèmes d’Information et de Gestion, obtenu en 2020 au Lycée Polyvalent Marc Bloch à Sérignan.
               </p>
               <p className="mb-6 text-foreground/80">
-                J’ai ensuite validé un BTS Services Informatiques aux Organisations, option Solutions 
+                J’ai ensuite validé un BTS Services Informatiques aux Organisations, option Solutions
                 Logicielles et Applications Métiers, dans le même établissement (2020-2022).
               </p>
               <p className="mb-6 text-foreground/80">
                 Poursuivant mon parcours, j’ai obtenu un Bachelor de Concepteur Développeur d’Applications à l’EPSI Montpellier (2022-2023).
               </p>
               <p className="mb-6 text-foreground/80">
-                Actuellement étudiant en Master à l’EPSI Montpellier, je me spécialise en tant qu’Expert en Informatique et Systèmes 
+                Actuellement étudiant en Master à l’EPSI Montpellier, je me spécialise en tant qu’Expert en Informatique et Systèmes
                 d’Information depuis septembre 2023.
               </p>
               <p className="mb-8 text-foreground/80">
-              À l'issue de ce Master, je souhaite mettre en œuvre mes compétences et connaissances acquises au cours de ces années
-              dans l'univers du développement informatique, mais également, dans la gestion de projets et l'architecture logicielle.
+                À l'issue de ce Master, je souhaite mettre en œuvre mes compétences et connaissances acquises au cours de ces années
+                dans l'univers du développement informatique, mais également, dans la gestion de projets et l'architecture logicielle.
               </p>
               <Button asChild variant="outline" className="rounded-full">
-                <Link href="#" download>
-                  Télécharger mon CV
+                <Link href="/cv-2025-ll.pdf" target="_blank" rel="noopener noreferrer">
+                  Visualiser mon CV
                   <Download className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -243,7 +233,7 @@ export default function Home() {
                     <h4 className="font-semibold">Stagiaire en Développement</h4>
                     <p className="text-sm text-foreground/70">ADSL Informatique • 01/2022 - 02/2022</p>
                     <p className="mt-2 text-sm text-foreground/80">
-                      Une refonte totale des éléments créés en 2021 (développement, documentation, publication).
+                      Une refonte totale des éléments créés en 2021 (développement, documentation, publication). <i>tentationvoyage.fr</i>
                     </p>
                   </div>
                   <div>
@@ -299,7 +289,7 @@ export default function Home() {
       <section id="projects" className="section-padding bg-soft dark:bg-secondary/30">
         <div className="container" ref={projectsRef}>
           <Link href="#projects">
-          <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">Projets & Réalisations</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">Projets & Réalisations</h2>
           </Link>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
             {projects.map((project) => (
@@ -312,167 +302,79 @@ export default function Home() {
                   <CardDescription>{project.description}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {project.technologies.map((tech, index) => (
-                      <span key={index} className="px-2 py-1 text-xs rounded-full bg-accent/20 font-medium">
-                        {tech}
-                      </span>
-                    ))}
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex flex-wrap gap-2">
+                      {project.technologies.map((tech, index) => (
+                        <span key={index} className="px-2 py-1 text-xs rounded-full bg-accent/20 font-medium">
+                          {tech}
+                        </span>
+                      ))}
+                    </div>
+                    <div className="flex gap-2">
+                      {project.github && (
+                        <Button asChild variant="outline" size="sm">
+                          <Link href={project.github} target="_blank" rel="noopener noreferrer">
+                            <Github className="mr-2 h-4 w-4" />
+                            GitHub
+                          </Link>
+                        </Button>
+                      )}
+                      {project.demo && (
+                        <Button asChild size="sm">
+                          <Link href={project.demo} target="_blank" rel="noopener noreferrer">
+                            <ExternalLink className="mr-2 h-4 w-4" />
+                            Démo
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
-                <CardFooter className="flex justify-between">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={project.github} target="_blank" rel="noopener noreferrer">
-                      <Github className="mr-2 h-4 w-4" />
-                      GitHub
-                    </Link>
-                  </Button>
-                  <Button asChild size="sm">
-                    <Link href={project.demo} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Démo
-                    </Link>
-                  </Button>
-                </CardFooter>
               </Card>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="section-divider"></div>
-
-      {/* GitHub Section */}
-      <section id="github" className="section-padding">
-        <div className="container" ref={githubRef}>
-          <Link href="#github">
-          <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">GitHub & Contributions</h2>
-          </Link>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
-            <div className="reveal">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Derniers Repositories</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {githubRepos.map((repo, index) => (
-                    <div key={index} className="p-4 border rounded-lg hover:border-accent transition-colors">
-                      <div className="flex justify-between items-start mb-2">
-                        <h4 className="font-semibold text-accent">{repo.name}</h4>
-                        <div className="flex items-center text-sm text-foreground/70">
-                          <span className="flex items-center mr-3">
-                            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 16 16">
-                              <path d="M8 .25a.75.75 0 0 1 .673.418l1.882 3.815 4.21.612a.75.75 0 0 1 .416 1.279l-3.046 2.97.719 4.192a.75.75 0 0 1-1.088.791L8 12.347l-3.766 1.98a.75.75 0 0 1-1.088-.79l.72-4.194L.818 6.374a.75.75 0 0 1 .416-1.28l4.21-.611L7.327.668A.75.75 0 0 1 8 .25z" />
-                            </svg>
-                            {repo.stars}
-                          </span>
-                          <span className="flex items-center">
-                            <svg className="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 16 16">
-                              <path d="M5 5.372v.878c0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75v-.878a2.25 2.25 0 1 1 1.5 0v.878a2.25 2.25 0 0 1-2.25 2.25h-1.5v2.128a2.251 2.251 0 1 1-1.5 0V8.5h-1.5A2.25 2.25 0 0 1 3.5 6.25v-.878a2.25 2.25 0 1 1 1.5 0ZM5 3.25a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Zm6.75.75a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm-3 8.75a.75.75 0 1 0-1.5 0 .75.75 0 0 0 1.5 0Z" />
-                            </svg>
-                            {repo.forks}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="text-sm text-foreground/80 mb-3">{repo.description}</p>
-                      <div className="flex items-center text-xs">
-                        <span className="flex items-center">
-                          <span className="w-3 h-3 rounded-full bg-accent mr-1"></span>
-                          {repo.language}
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </CardContent>
-                <CardFooter>
-                  <Button asChild variant="outline" className="w-full">
-                    <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
-                      <Github className="mr-2 h-4 w-4" />
-                      Voir tous les repositories
-                    </Link>
-                  </Button>
-                </CardFooter>
-              </Card>
-            </div>
-            <div className="reveal">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Contributions GitHub</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="bg-secondary p-4 rounded-lg">
-                    <div className="grid grid-cols-7 gap-1">
-                      {Array.from({ length: 49 }).map((_, index) => (
-                        <div
-                          key={index}
-                          className={`w-full aspect-square rounded-sm ${
-                            Math.random() > 0.6 ? "bg-accent" : Math.random() > 0.3 ? "bg-accent/50" : "bg-accent/20"
-                          }`}
-                          style={{
-                            opacity: Math.random() > 0.6 ? 1 : Math.random() > 0.3 ? 0.6 : 0.2,
-                          }}
-                        />
-                      ))}
-                    </div>
-                    <div className="mt-4 text-xs text-foreground/70 text-center">
-                      Graphique de contributions (simulation)
-                    </div>
-                  </div>
-                </CardContent>
-                <CardFooter>
-                  <p className="text-sm text-foreground/80 text-center w-full">
-                    Plus de 500 contributions au cours de la dernière année
-                  </p>
-                </CardFooter>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Divider */}
-      <div className="section-divider"></div>
-
       {/* Contact Section */}
       <section id="contact" className="section-padding bg-secondary dark:bg-secondary/50">
-        <div className="container" ref={contactRef}>
+        <div className="container pb-24" ref={contactRef}>
           <Link href="#contact">
-          <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">Contact</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">Contact</h2>
           </Link>
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <Card className="reveal">
               <CardHeader>
                 <CardTitle>Envoyez-moi un message</CardTitle>
                 <CardDescription>Remplissez le formulaire ci-dessous pour me contacter directement.</CardDescription>
               </CardHeader>
               <CardContent>
-                <form className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="space-y-2">
+                <form className="space-y-4" onSubmit={sendEmail}>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1">
                       <label htmlFor="name" className="text-sm font-medium">
                         Nom
                       </label>
-                      <Input id="name" placeholder="Votre nom" />
+                      <Input id="name" name="name" placeholder="Votre nom" />
                     </div>
-                    <div className="space-y-2">
+                    <div className="space-y-1">
                       <label htmlFor="email" className="text-sm font-medium">
                         Email
                       </label>
-                      <Input id="email" type="email" placeholder="votre@email.com" />
+                      <Input id="email" name="email" type="email" placeholder="votre@email.com" />
                     </div>
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <label htmlFor="subject" className="text-sm font-medium">
                       Sujet
                     </label>
-                    <Input id="subject" placeholder="Sujet de votre message" />
+                    <Input id="subject" name="subject" placeholder="Sujet de votre message" />
                   </div>
-                  <div className="space-y-2">
+                  <div className="space-y-1">
                     <label htmlFor="message" className="text-sm font-medium">
                       Message
                     </label>
-                    <Textarea id="message" placeholder="Votre message..." rows={5} />
+                    <Textarea id="message" name="message" placeholder="Votre message..." rows={4} />
                   </div>
                   <Button type="submit" className="w-full">
                     <Send className="mr-2 h-4 w-4" />
@@ -487,30 +389,30 @@ export default function Home() {
                   <CardTitle>Informations de contact</CardTitle>
                   <CardDescription>Vous pouvez également me contacter via les moyens suivants.</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
+                <CardContent className="space-y-4">
                   <div className="flex items-start">
-                    <Mail className="h-5 w-5 mr-3 text-accent" />
+                    <Mail className="h-5 w-5 mr-2 text-accent" />
                     <div>
                       <h4 className="font-medium">Email</h4>
                       <p className="text-sm text-foreground/80">lilian.layrac@gmail.com</p>
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <Github className="h-5 w-5 mr-3 text-accent" />
+                    <Github className="h-5 w-5 mr-2 text-accent" />
                     <div>
                       <h4 className="font-medium">GitHub</h4>
                       <p className="text-sm text-foreground/80">github.com/MasWap</p>
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <Linkedin className="h-5 w-5 mr-3 text-accent" />
+                    <Linkedin className="h-5 w-5 mr-2 text-accent" />
                     <div>
                       <h4 className="font-medium">LinkedIn</h4>
                       <p className="text-sm text-foreground/80">linkedin.com/in/lilian-layrac</p>
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <Instagram className="h-5 w-5 mr-3 text-accent" />
+                    <Instagram className="h-5 w-5 mr-2 text-accent" />
                     <div>
                       <h4 className="font-medium">Instagram</h4>
                       <p className="text-sm text-foreground/80">instagram.com/lilian.lyrc/</p>
@@ -522,6 +424,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+
     </>
   )
 }
