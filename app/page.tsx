@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useScrollReveal } from "@/hooks/use-scroll-reveal"
 import SmoothScrollLink from "@/hooks/smooth-scroll-link"
+import SeaAnimation from "@/components/sea-animation";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { AdaptiveSection } from '@/components/adaptive-section';
 import { useTranslation } from '@/lib/translation';
@@ -165,7 +166,7 @@ export default function Home() {
       <AdaptiveSection 
         id="home" 
         ref={heroRef}
-        className="pt-28 pb-20" 
+        className="pt-28 pb-20 relative" 
         backgroundColor="bg-gradient-to-b from-soft to-background dark:from-background dark:to-background"
       >
         <div className="container" ref={heroRef}>
@@ -215,10 +216,8 @@ export default function Home() {
             </div>
           </div>
         </div>
+        <SeaAnimation />
       </AdaptiveSection>
-
-      {/* Divider */}
-      <div className="section-divider"></div>
 
       {/* About Section */}
       <AdaptiveSection 

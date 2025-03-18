@@ -4,10 +4,9 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { ModeToggle } from "@/components/mode-toggle"
 import { cn } from "@/lib/utils"
 import SmoothScrollLink from "@/hooks/smooth-scroll-link";
-import { LanguageSelector, useTranslation } from "@/lib/translation" // Ajoutez cette ligne
+import { LanguageSelector, useTranslation } from "@/lib/translation"
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -74,38 +73,12 @@ export default function Header() {
           ))}
           <div className="ml-4 flex items-center space-x-2">
             <LanguageSelector />
-            <ModeToggle />
           </div>
         </nav>
 
         {/* Mobile Navigation Toggle */}
         <div className="flex items-center md:hidden space-x-2">
           <LanguageSelector />
-          <ModeToggle />
-        </div>
-      </div>
-
-      {/* Mobile Navigation Menu */}
-      <div
-        className={cn(
-          "fixed inset-0 bg-background/95 backdrop-blur-sm z-40 md:hidden transition-transform duration-300 ease-in-out",
-          isOpen ? "translate-x-0" : "translate-x-full",
-        )}
-      >
-        <div className="flex flex-col items-center justify-center h-full space-y-8">
-          {navItems.map((item) => (
-            <Link
-              key={item.name}
-              href={item.href}
-              className={cn(
-                "text-xl font-medium transition-colors",
-                activeSection === item.href.substring(1) ? "text-accent" : "text-foreground hover:text-accent",
-              )}
-              onClick={() => setIsOpen(false)}
-            >
-              {item.name}
-            </Link>
-          ))}
         </div>
       </div>
     </header>

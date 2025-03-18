@@ -26,20 +26,24 @@ const config = {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#CDC1FF",
-          foreground: "#1A1A1A",
+          DEFAULT: "#a2d5d8", // Turquoise clair
+          foreground: "#FFFFFF",
         },
         secondary: {
-          DEFAULT: "#F5EFFF",
+          DEFAULT: "#e9c16a", // Jaune doré
           foreground: "#1A1A1A",
         },
         accent: {
-          DEFAULT: "#A594F9",
+          DEFAULT: "#b84f0b", // Orange rouille
           foreground: "#FFFFFF",
         },
         soft: {
-          DEFAULT: "#E5D9F2",
+          DEFAULT: "#d3c199", // Beige/sable
           foreground: "#1A1A1A",
+        },
+        teal: {
+          DEFAULT: "#64a2ad", // Bleu-vert/turquoise foncé
+          foreground: "#FFFFFF",
         },
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
