@@ -131,6 +131,10 @@ export default function Home() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   
+  useEffect(() => {
+    emailjs.init("6G66gCydOr0k-L6iJ");
+  }, []);
+
   const sendEmail = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -139,8 +143,8 @@ export default function Home() {
     // Récupérer les valeurs du formulaire
     const form = e.target as HTMLFormElement;
     const formData = {
-      user_name: form.user_name.value,
-      user_email: form.user_email.value,
+      from_name: form.user_name.value,
+      reply_to: form.user_email.value,
       subject: form.subject.value,
       message: form.message.value
     };
