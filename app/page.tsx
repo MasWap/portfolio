@@ -140,27 +140,18 @@ export default function Home() {
     setIsSubmitting(true);
     setSubmitStatus('idle');
     
-    // Récupérer les valeurs du formulaire
-    const form = e.target as HTMLFormElement;
-    const formData = {
-      from_name: form.user_name.value,
-      reply_to: form.user_email.value,
-      subject: form.subject.value,
-      message: form.message.value
-    };
-    
-    emailjs.send(
+    emailjs.sendForm(
       "service_zqivz22",
       "template_r8eem38",
-      formData,
+      e.target as HTMLFormElement,
       "6G66gCydOr0k-L6iJ"
     )
     .then((result) => {
       console.log('Succès:', result.text);
       setSubmitStatus('success');
-      form.reset();
+      (e.target as HTMLFormElement).reset();
     }, (error) => {
-      console.log('Erreur:', error.text);
+      console.log('Erreur détaillée:', error);
       setSubmitStatus('error');
     })
     .finally(() => {
