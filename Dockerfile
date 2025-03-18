@@ -12,9 +12,6 @@ RUN npm install --legacy-peer-deps
 # Copier le reste des fichiers de l'application
 COPY . .
 
-# Générer le client Prisma
-RUN npx prisma generate
-
 # Construire l'application Next.js
 RUN npm run build
 
