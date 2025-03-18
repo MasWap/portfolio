@@ -145,12 +145,11 @@ export default function Home() {
       message: form.message.value
     };
     
-    // Utiliser emailjs.send() au lieu de sendForm
     emailjs.send(
-      process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
-      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
+      "service_zqivz22",
+      "template_r8eem38",
       formData,
-      process.env.NEXT_PUBLIC_EMAILJS_USER_ID
+      "6G66gCydOr0k-L6iJ"
     )
     .then((result) => {
       console.log('Succès:', result.text);
