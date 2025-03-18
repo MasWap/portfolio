@@ -7,6 +7,7 @@ import Header from "@/components/header"
 import Footer from "@/components/footer"
 import ScrollAnimations from "./scroll-animations"
 import ThemeScript from "./theme-script"
+import { TranslationProvider } from "@/lib/translation" // Ajoutez cette ligne
 
 const inter = Inter({
   subsets: ["latin"],
@@ -14,8 +15,14 @@ const inter = Inter({
 })
 
 export const metadata: Metadata = {
-  title: "Portfolio | Développeur Web",
-  description: "Portfolio professionnel présentant mes compétences, projets et expériences en développement web",
+  title: "Portfolio | Lilian Layrac",
+  description: "Portfolio professionnel présentant mes compétences, projets et expériences professionnelles.",
+  icons: [
+    {
+      url: '/l.ico',
+      type: 'image/x-icon',
+    },
+  ],
 }
 
 export default function RootLayout({
@@ -25,19 +32,24 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr" suppressHydrationWarning>
-      <body className={`${inter.variable} font-sans`}>
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange={false}>
-          <Header />
-          <main className="min-h-screen">{children}</main>
-          <Footer />
-          <ScrollAnimations />
-          <ThemeScript />
+      <head>
+        <ThemeScript />
+      </head>
+      <body className={`${inter.variable} font-sans antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TranslationProvider>
+            <ScrollAnimations />
+            <Header />
+            {children}
+            <Footer />
+          </TranslationProvider>
         </ThemeProvider>
       </body>
     </html>
-  )
+  );
 }
-
-
-
-import './globals.css'

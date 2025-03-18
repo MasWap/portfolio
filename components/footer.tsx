@@ -1,13 +1,22 @@
+"use client";
+
 import Link from "next/link"
 import { Mail, Github, Linkedin, Instagram } from "lucide-react"
+import { useTranslation } from "@/lib/translation"
 
 export default function Footer() {
+  const { t } = useTranslation();
+  const currentYear = new Date().getFullYear();
+  
+  // Remplacer la valeur de l'année dans le texte de copyright
+  const copyright = t('footer.copyright').replace('{year}', currentYear.toString());
+
   return (
     <footer className="bg-secondary dark:bg-secondary/50 py-8 pt-10">
       <div className="container">
         <div className="flex flex-col md:flex-row justify-between items-center">
           <div className="mb-4 md:mb-0">
-            <p className="text-sm text-foreground/80">© {new Date().getFullYear()} Portfolio. Tous droits réservés.</p>
+            <p className="text-sm text-foreground/80">{copyright}</p>
           </div>
           <div className="flex space-x-4">
             <Link
@@ -52,4 +61,3 @@ export default function Footer() {
     </footer>
   )
 }
-

@@ -1,49 +1,48 @@
 "use client"
+import { useState, useEffect, FormEvent } from 'react';
 import Image from "next/image"
 import Link from "next/link"
-import emailjs from 'emailjs-com';
-import { FormEvent } from 'react';
-import { ArrowRight, Download, ExternalLink, Github, Mail, Send, Linkedin, Instagram } from "lucide-react"
+import emailjs from '@emailjs/browser';
+import { ArrowRight, Download, ExternalLink, Github, Mail, Send, Linkedin, Instagram, CheckCircle, AlertCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useScrollReveal } from "@/hooks/use-scroll-reveal"
 import SmoothScrollLink from "@/hooks/smooth-scroll-link"
+import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
+import { AdaptiveSection } from '@/components/adaptive-section';
+import { useTranslation } from '@/lib/translation';
 
 // Données fictives pour les projets
 const projects = [
   {
     id: 1,
-    title: "Site de chambre d'hôtes | Maison Tobias",
-    description:
-      "Site réalisé bénévolement, pour réserver des chambres dans une maison d'hôte. Le site est également muni d'une interface d'administration.",
-    image: "/placeholder.svg?height=300&width=500",
+    titleKey: "projects.maisontobias.title",
+    descriptionKey: "projects.maisontobias.description",
+    image: "/maisontobias.png?height=300&width=500",
     technologies: ["React", "Next.js", "TailwindCSS"],
     demo: "https://maisontobias.fr",
   },
   {
     id: 2,
-    title: "Site de reservation de voyages | TentationVoyage",
-    description:
-      "Site réalisé lors d'un stage en BTS. Il permet de réserver des voyages, de gérer des listes de diffusions, des utilisateurs, des widgets, via une interface d'administration.",
+    titleKey: "projects.tenta.title",
+    descriptionKey: "projects.tenta.description",
     image: "/tenta.png?height=300&width=500",
     technologies: ["React", "Next.js", "TailwindCSS"],
     demo: "https://www.tentationvoyage.fr/",
   },
   {
     id: 3,
-    title: "Compteur de trous | Hole counter",
-    description:
-      "Application permettant de compter les troues dans une cible pour compter le nombre de points.",
+    titleKey: "projects.holecounter.title",
+    descriptionKey: "projects.holecounter.description",
     image: "/placeholder.svg?height=300&width=500",
     technologies: ["Python", "Flask", "OpenCV", "IA"],
   },
   {
     id: 4,
-    title: "Site vitrine | Portfolio",
-    description:
-      "Un portfolio moderne et interactif développé avec Next.js et TailwindCSS pour présenter mes projets et compétences.",
+    titleKey: "projects.portfolio.title",
+    descriptionKey: "projects.portfolio.description",
     image: "/portfolio.png?height=300&width=500",
     technologies: ["React", "Next.js", "TailwindCSS"],
     github: "https://github.com/MasWap/portfolio",
@@ -54,90 +53,149 @@ const projects = [
 // Données mises à jour pour les compétences
 const skills = [
   {
-    category: "Développement",
-    items: ["PHP", "JS", "React", "Python", "SQL", "Bash"],
+    categoryKey: "skills.development",
+    items: [
+      { key: "skills.development.php" },
+      { key: "skills.development.js" },
+      { key: "skills.development.react" },
+      { key: "skills.development.python" },
+      { key: "skills.development.sql" },
+      { key: "skills.development.bash" },
+    ],
   },
   {
-    category: "Infrastructure et DevOps",
-    items: ["Git", "Docker", "CI/CD", "Kubernetes", "Windows", "Linux"],
+    categoryKey: "skills.infrastructure",
+    items: [
+      { key: "skills.infrastructure.git" },
+      { key: "skills.infrastructure.docker" },
+      { key: "skills.infrastructure.cicd" },
+      { key: "skills.infrastructure.kubernetes" },
+      { key: "skills.infrastructure.windows" },
+      { key: "skills.infrastructure.linux" },
+    ],
   },
   {
-    category: "Gestion de Projet",
-    items: ["Asana", "Gantt", "SERT", "SWOT", "Méthodologie Agile"],
+    categoryKey: "skills.projectManagement",
+    items: [
+      { key: "skills.projectManagement.asana" },
+      { key: "skills.projectManagement.gantt" },
+      { key: "skills.projectManagement.sert" },
+      { key: "skills.projectManagement.swot" },
+      { key: "skills.projectManagement.agile" },
+    ],
   },
   {
-    category: "Conception et architecture de logiciels",
-    items: ["UML", "MVC", "API Design", "TDD", "Code Review"],
+    categoryKey: "skills.softwareArchitecture",
+    items: [
+      { key: "skills.softwareArchitecture.uml" },
+      { key: "skills.softwareArchitecture.mvc" },
+      { key: "skills.softwareArchitecture.apiDesign" },
+      { key: "skills.softwareArchitecture.tdd" },
+      { key: "skills.softwareArchitecture.codeReview" },
+    ],
   },
   {
-    category: "Backend et API",
-    items: ["Framework (Symfony, Express.js, Next.js)", "Base de données (PostgreSQL)", "Développement d'API (Postman, Swagger)", "Monitoring (Prometheus)"],
+    categoryKey: "skills.backendApi",
+    items: [
+      { key: "skills.backendApi.frameworks" },
+      { key: "skills.backendApi.databases" },
+      { key: "skills.backendApi.apiDev" },
+      { key: "skills.backendApi.monitoring" },
+    ],
   },
   {
-    category: "Communication et Travail d'Équipe",
-    items: ["Teams", "GitHub", "GitLab", "Wiki"],
+    categoryKey: "skills.communication",
+    items: [
+      { key: "skills.communication.teams" },
+      { key: "skills.communication.github" },
+      { key: "skills.communication.gitlab" },
+      { key: "skills.communication.wiki" },
+    ],
   },
   {
-    category: "Bénévolat",
-    items: ["Réalisation de sites web (maison d'hôtes) maisontobias.fr"],
+    categoryKey: "skills.volunteer",
+    items: [
+      { key: "skills.volunteer.websites" },
+    ],
   },
 ]
 
-const sendEmail = (e: FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-
-  emailjs.sendForm(
-    process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID,
-    process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID,
-    e.target as HTMLFormElement,
-    process.env.NEXT_PUBLIC_EMAILJS_USER_ID
-  )
-    .then((result) => {
-        console.log(result.text);
-    }, (error) => {
-        console.log(error.text);
-    });
-
-  e.target.reset();
-};
-
 export default function Home() {
+  const { t } = useTranslation();
   const heroRef = useScrollReveal()
   const aboutRef = useScrollReveal()
   const skillsRef = useScrollReveal({ staggered: true, staggerDelay: 100 })
   const projectsRef = useScrollReveal({ staggered: true, staggerDelay: 200 })
   const contactRef = useScrollReveal()
+  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  
+  const sendEmail = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus('idle');
+    
+    // Récupérer les valeurs du formulaire
+    const form = e.target as HTMLFormElement;
+    const formData = {
+      user_name: form.user_name.value,
+      user_email: form.user_email.value,
+      subject: form.subject.value,
+      message: form.message.value
+    };
+    
+    // Utiliser emailjs.send() au lieu de sendForm
+    emailjs.send(
+      process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID || "",
+      process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID || "",
+      formData,
+      process.env.NEXT_PUBLIC_EMAILJS_USER_ID
+    )
+    .then((result) => {
+      console.log('Succès:', result.text);
+      setSubmitStatus('success');
+      form.reset();
+    }, (error) => {
+      console.log('Erreur:', error.text);
+      setSubmitStatus('error');
+    })
+    .finally(() => {
+      setIsSubmitting(false);
+    });
+  };
 
   return (
     <>
       {/* Hero Section */}
-      <section
-        id="home"
-        className="min-h-screen flex items-center pt-28 pb-20 bg-gradient-to-b from-soft to-background dark:from-background dark:to-background"
+      <AdaptiveSection 
+        id="home" 
+        ref={heroRef}
+        className="pt-28 pb-20" 
+        backgroundColor="bg-gradient-to-b from-soft to-background dark:from-background dark:to-background"
       >
         <div className="container" ref={heroRef}>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
             <div className="reveal">
               <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
                 <Link href="#home">
-                  Hello, je suis <span className="text-accent">Lilian Layrac</span>
+                  {t('hero.greeting')} <span className="text-accent">Lilian Layrac</span>
                 </Link>
               </h1>
-              <p className="text-xl md:text-2xl mb-8 text-foreground/80">Développeur Web Full Stack</p>
+              <p className="text-xl md:text-2xl mb-8 text-foreground/80">{t('hero.title')}</p>
               <p className="text-base md:text-lg mb-10 text-foreground/70 max-w-lg">
-                Avec une appétence particulière pour le développement informatique et l'univers de l'IT,
-                je vous présente mes compétences et mon parcours dans ce Portfolio à mon effigie.
+                {t('hero.description')}
               </p>
               <div className="flex flex-wrap gap-4">
                 <Button asChild size="lg" className="rounded-full">
                   <SmoothScrollLink href="#projects">
-                    Découvrir mon travail
+                    {t('hero.cta.discover')}
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </SmoothScrollLink>
                 </Button>
                 <Button asChild variant="outline" size="lg" className="rounded-full">
                   <SmoothScrollLink href="#contact">
-                    Me contacter
+                    {t('hero.cta.contact')}
                     <Mail className="ml-2 h-4 w-4" />
                   </SmoothScrollLink>
                 </Button>
@@ -145,7 +203,6 @@ export default function Home() {
             </div>
             <div className="flex justify-center lg:justify-end reveal">
               <div className="relative w-80 h-80 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-primary shadow-xl group">
-                {/* Première image */}
                 <Image
                   src="/me.jpeg?height=400&width=400"
                   alt="Moi"
@@ -153,7 +210,6 @@ export default function Home() {
                   className="object-cover scale-110 absolute top-0 left-0"
                   priority
                 />
-                {/* Deuxième image */}
                 <Image
                   src="/mev2.jpeg?height=400&width=400"
                   alt="Moi v2"
@@ -163,48 +219,46 @@ export default function Home() {
                 />
               </div>
             </div>
-
-
           </div>
         </div>
-      </section>
+      </AdaptiveSection>
 
       {/* Divider */}
       <div className="section-divider"></div>
 
       {/* About Section */}
-      <section id="about" className="section-padding bg-secondary dark:bg-secondary/50">
+      <AdaptiveSection 
+        id="about" 
+        ref={aboutRef}
+        backgroundColor="bg-secondary dark:bg-secondary/50"
+      >
         <div className="container pb-40" ref={aboutRef}>
           <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">
             <Link href="#about">
-              À Propos
+              {t('about.title')}
             </Link>
           </h2>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
             <div className="reveal">
-              <h3 className="text-2xl font-semibold mb-6">Mon Parcours</h3>
+              <h3 className="text-2xl font-semibold mb-6">{t('about.journey.title')}</h3>
               <p className="mb-6 text-foreground/80">
-                Mon parcours académique a débuté avec un Baccalauréat en Sciences et Technologies du Management et de la Gestion,
-                option Systèmes d’Information et de Gestion, obtenu en 2020 au Lycée Polyvalent Marc Bloch à Sérignan.
+                {t('about.journey.bac')}
               </p>
               <p className="mb-6 text-foreground/80">
-                J’ai ensuite validé un BTS Services Informatiques aux Organisations, option Solutions
-                Logicielles et Applications Métiers, dans le même établissement (2020-2022).
+                {t('about.journey.bts')}
               </p>
               <p className="mb-6 text-foreground/80">
-                Poursuivant mon parcours, j’ai obtenu un Bachelor de Concepteur Développeur d’Applications à l’EPSI Montpellier (2022-2023).
+                {t('about.journey.bachelor')}
               </p>
               <p className="mb-6 text-foreground/80">
-                Actuellement étudiant en Master à l’EPSI Montpellier, je me spécialise en tant qu’Expert en Informatique et Systèmes
-                d’Information depuis septembre 2023.
+                {t('about.journey.master')}
               </p>
               <p className="mb-8 text-foreground/80">
-                À l'issue de ce Master, je souhaite mettre en œuvre mes compétences et connaissances acquises au cours de ces années
-                dans l'univers du développement informatique, mais également, dans la gestion de projets et l'architecture logicielle.
+                {t('about.journey.future')}
               </p>
               <Button asChild variant="outline" className="rounded-full">
                 <Link href="/cv-2025-ll.pdf" target="_blank" rel="noopener noreferrer">
-                  Visualiser mon CV
+                  {t('about.cv')}
                   <Download className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
@@ -212,35 +266,35 @@ export default function Home() {
             <div className="reveal">
               <Card>
                 <CardHeader>
-                  <CardTitle>Expérience Professionnelle</CardTitle>
+                  <CardTitle>{t('about.experience.title')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
                   <div>
-                    <h4 className="font-semibold">Développeur PHP (Symfony)</h4>
-                    <p className="text-sm text-foreground/70">IRD • 09/2023 - 09/2025</p>
+                    <h4 className="font-semibold">{t('about.experience.ird.title')}</h4>
+                    <p className="text-sm text-foreground/70">{t('about.experience.ird.company')}</p>
                     <p className="mt-2 text-sm text-foreground/80">
-                      Développement d'applications web (Back & Front), services, Rédaction de documentation technique et fonctionnelle, Chefferie de projet (lancement, planification, exécution et clôture).
+                      {t('about.experience.ird.description')}
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold">Développeur Full-stack (DevOps)</h4>
-                    <p className="text-sm text-foreground/70">Algo Solutions • 09/2022 - 09/2023</p>
+                    <h4 className="font-semibold">{t('about.experience.algo.title')}</h4>
+                    <p className="text-sm text-foreground/70">{t('about.experience.algo.company')}</p>
                     <p className="mt-2 text-sm text-foreground/80">
-                      Création d'instances Docker, déploiements avec Ansible, Développement d'applications (Back & Front), Concept DevOps, Élaboration d'architectures logicielles.
+                      {t('about.experience.algo.description')}
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold">Stagiaire en Développement</h4>
-                    <p className="text-sm text-foreground/70">ADSL Informatique • 01/2022 - 02/2022</p>
+                    <h4 className="font-semibold">{t('about.experience.adsl2.title')}</h4>
+                    <p className="text-sm text-foreground/70">{t('about.experience.adsl2.company')}</p>
                     <p className="mt-2 text-sm text-foreground/80">
-                      Une refonte totale des éléments créés en 2021 (développement, documentation, publication). <i>tentationvoyage.fr</i>
+                      {t('about.experience.adsl2.description')}
                     </p>
                   </div>
                   <div>
-                    <h4 className="font-semibold">Stagiaire en Développement</h4>
-                    <p className="text-sm text-foreground/70">ADSL Informatique • 05/2021 - 06/2021</p>
+                    <h4 className="font-semibold">{t('about.experience.adsl1.title')}</h4>
+                    <p className="text-sm text-foreground/70">{t('about.experience.adsl1.company')}</p>
                     <p className="mt-2 text-sm text-foreground/80">
-                      Analyse des demandes client et réalisation de ces dernières, Amélioration de l'interface utilisateur, Élaboration et rédaction de documents et supports techniques.
+                      {t('about.experience.adsl1.description')}
                     </p>
                   </div>
                 </CardContent>
@@ -248,20 +302,24 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
+      </AdaptiveSection>
 
       {/* Divider */}
       <div className="section-divider"></div>
 
       {/* Skills Section */}
-      <section id="skills" className="section-padding">
+      <AdaptiveSection 
+        id="skills" 
+        ref={skillsRef}
+        className="py-16"
+      >
         <div className="container" ref={skillsRef}>
-          <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">Compétences</h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">{t('skills.title')}</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {skills.map((skillGroup, index) => (
               <Card key={index} className="staggered-item">
                 <CardHeader>
-                  <CardTitle>{skillGroup.category}</CardTitle>
+                  <CardTitle>{t(skillGroup.categoryKey)}</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <ul className="space-y-3">
@@ -271,7 +329,7 @@ export default function Home() {
                         className="flex items-center p-2 rounded-md hover:bg-accent/10 transition-colors"
                       >
                         <div className="w-2 h-2 rounded-full bg-accent mr-2"></div>
-                        {skill}
+                        {t(skill.key)}
                       </li>
                     ))}
                   </ul>
@@ -280,105 +338,138 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
+      </AdaptiveSection>
 
       {/* Divider */}
       <div className="section-divider"></div>
 
       {/* Projects Section */}
-      <section id="projects" className="section-padding bg-soft dark:bg-secondary/30">
+      <AdaptiveSection 
+        id="projects" 
+        ref={projectsRef}
+        className="py-20"
+        backgroundColor="bg-soft dark:bg-secondary/30"
+      >
         <div className="container" ref={projectsRef}>
           <Link href="#projects">
-            <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">Projets & Réalisations</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">{t('projects.title')}</h2>
           </Link>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            {projects.map((project) => (
-              <Card key={project.id} className="overflow-hidden staggered-item">
-                <div className="relative h-48 w-full">
-                  <Image src={project.image || "/placeholder.svg"} alt={project.title} fill className="object-cover" />
+          {projects.map((project) => (
+          <Card key={project.id} className="overflow-hidden staggered-item">
+            <div className="relative h-48 w-full">
+              <Image src={project.image || "/placeholder.svg"} alt={t(project.titleKey)} fill className="object-cover" />
+            </div>
+            <CardHeader>
+              <CardTitle>{t(project.titleKey)}</CardTitle>
+              <CardDescription>{t(project.descriptionKey)}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex flex-wrap gap-2">
+                  {project.technologies.map((tech, index) => (
+                    <span key={index} className="px-2 py-1 text-xs rounded-full bg-accent/20 font-medium">
+                      {tech}
+                    </span>
+                  ))}
                 </div>
-                <CardHeader>
-                  <CardTitle>{project.title}</CardTitle>
-                  <CardDescription>{project.description}</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex flex-wrap gap-2">
-                      {project.technologies.map((tech, index) => (
-                        <span key={index} className="px-2 py-1 text-xs rounded-full bg-accent/20 font-medium">
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                    <div className="flex gap-2">
-                      {project.github && (
-                        <Button asChild variant="outline" size="sm">
-                          <Link href={project.github} target="_blank" rel="noopener noreferrer">
-                            <Github className="mr-2 h-4 w-4" />
-                            GitHub
-                          </Link>
-                        </Button>
-                      )}
-                      {project.demo && (
-                        <Button asChild size="sm">
-                          <Link href={project.demo} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="mr-2 h-4 w-4" />
-                            Démo
-                          </Link>
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                <div className="flex gap-2">
+                  {project.github && (
+                    <Button asChild variant="outline" size="sm">
+                      <Link href={project.github} target="_blank" rel="noopener noreferrer">
+                        <Github className="mr-2 h-4 w-4" />
+                        {t('projects.github')}
+                      </Link>
+                    </Button>
+                  )}
+                  {project.demo && (
+                    <Button asChild size="sm">
+                      <Link href={project.demo} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink className="mr-2 h-4 w-4" />
+                        {t('projects.demo')}
+                      </Link>
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
           </div>
         </div>
-      </section>
+      </AdaptiveSection>
 
       {/* Contact Section */}
-      <section id="contact" className="section-padding bg-secondary dark:bg-secondary/50">
+      <AdaptiveSection 
+        id="contact" 
+        ref={contactRef}
+        className="pb-24"
+        backgroundColor="bg-secondary dark:bg-secondary/50"
+      >
         <div className="container pb-24" ref={contactRef}>
           <Link href="#contact">
-            <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">Contact</h2>
+            <h2 className="text-3xl md:text-4xl font-bold mb-16 text-center reveal">{t('contact.title')}</h2>
           </Link>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
             <Card className="reveal">
               <CardHeader>
-                <CardTitle>Envoyez-moi un message</CardTitle>
-                <CardDescription>Remplissez le formulaire ci-dessous pour me contacter directement.</CardDescription>
+                <CardTitle>{t('contact.form.title')}</CardTitle>
+                <CardDescription>{t('contact.form.description')}</CardDescription>
               </CardHeader>
               <CardContent>
+                {submitStatus === 'success' && (
+                  <Alert className="mb-4 bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-900">
+                    <CheckCircle className="h-4 w-4 text-green-600 dark:text-green-400" />
+                    <AlertTitle>{t('contact.form.success')}</AlertTitle>
+                    <AlertDescription>{t('contact.form.success.message')}</AlertDescription>
+                  </Alert>
+                )}
+                {submitStatus === 'error' && (
+                  <Alert className="mb-4 bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-900">
+                    <AlertCircle className="h-4 w-4 text-red-600 dark:text-red-400" />
+                    <AlertTitle>{t('contact.form.error')}</AlertTitle>
+                    <AlertDescription>{t('contact.form.error.message')}</AlertDescription>
+                  </Alert>
+                )}
                 <form className="space-y-4" onSubmit={sendEmail}>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div className="space-y-1">
                       <label htmlFor="name" className="text-sm font-medium">
-                        Nom
+                        {t('contact.form.name')}
                       </label>
-                      <Input id="name" name="name" placeholder="Votre nom" />
+                      <Input id="name" name="user_name" placeholder={t('contact.form.name')} required />
                     </div>
                     <div className="space-y-1">
                       <label htmlFor="email" className="text-sm font-medium">
-                        Email
+                        {t('contact.form.email')}
                       </label>
-                      <Input id="email" name="email" type="email" placeholder="votre@email.com" />
+                      <Input id="email" name="user_email" type="email" placeholder={t('contact.form.youremail')} required />
                     </div>
                   </div>
                   <div className="space-y-1">
                     <label htmlFor="subject" className="text-sm font-medium">
-                      Sujet
+                      {t('contact.form.subject')}
                     </label>
-                    <Input id="subject" name="subject" placeholder="Sujet de votre message" />
+                    <Input id="subject" name="subject" placeholder={t('contact.form.subject')} required />
                   </div>
                   <div className="space-y-1">
                     <label htmlFor="message" className="text-sm font-medium">
-                      Message
+                      {t('contact.form.message')}
                     </label>
-                    <Textarea id="message" name="message" placeholder="Votre message..." rows={4} />
+                    <Textarea id="message" name="message" placeholder={t('contact.form.message')} rows={4} required />
                   </div>
-                  <Button type="submit" className="w-full">
-                    <Send className="mr-2 h-4 w-4" />
-                    Envoyer le message
+                  <Button type="submit" className="w-full" disabled={isSubmitting}>
+                    {isSubmitting ? (
+                      <>
+                        <div className="h-4 w-4 mr-2 animate-spin rounded-full border-2 border-current border-t-transparent"></div>
+                        {t('contact.form.sending')}
+                      </>
+                    ) : (
+                      <>
+                        <Send className="mr-2 h-4 w-4" />
+                        {t('contact.form.submit')}
+                      </>
+                    )}
                   </Button>
                 </form>
               </CardContent>
@@ -386,8 +477,8 @@ export default function Home() {
             <div className="reveal">
               <Card>
                 <CardHeader>
-                  <CardTitle>Informations de contact</CardTitle>
-                  <CardDescription>Vous pouvez également me contacter via les moyens suivants.</CardDescription>
+                  <CardTitle>{t('contact.info.title')}</CardTitle>
+                  <CardDescription>{t('contact.info.description')}</CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="flex items-start">
@@ -423,9 +514,7 @@ export default function Home() {
             </div>
           </div>
         </div>
-      </section>
-
-
+      </AdaptiveSection>
     </>
   )
 }

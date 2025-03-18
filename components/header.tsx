@@ -6,20 +6,22 @@ import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ModeToggle } from "@/components/mode-toggle"
 import { cn } from "@/lib/utils"
-import SmoothScrollLink  from "@/hooks/smooth-scroll-link";
-
-const navItems = [
-  { name: "Accueil", href: "#home" },
-  { name: "À Propos", href: "#about" },
-  { name: "Compétences", href: "#skills" },
-  { name: "Projets", href: "#projects" },
-  { name: "Contact", href: "#contact" },
-]
+import SmoothScrollLink from "@/hooks/smooth-scroll-link";
+import { LanguageSelector, useTranslation } from "@/lib/translation" // Ajoutez cette ligne
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [activeSection, setActiveSection] = useState("home")
+  const { t } = useTranslation();
+
+  const navItems = [
+    { name: t("nav.home"), href: "#home" },
+    { name: t("nav.about"), href: "#about" },
+    { name: t("nav.skills"), href: "#skills" },
+    { name: t("nav.projects"), href: "#projects" },
+    { name: t("nav.contact"), href: "#contact" },
+  ]
 
   useEffect(() => {
     const handleScroll = () => {
@@ -42,7 +44,7 @@ export default function Header() {
 
     window.addEventListener("scroll", handleScroll)
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
+  }, [navItems])
 
   return (
     <header
@@ -60,23 +62,25 @@ export default function Header() {
         <nav className="hidden md:flex items-center space-x-1">
           {navItems.map((item) => (
             <SmoothScrollLink
-            key={item.name}
-            href={item.href}
-            className={cn(
-              "px-3 py-2 text-sm font-medium transition-colors",
-              activeSection === item.href.substring(1) ? "text-accent" : "text-foreground hover:text-accent",
-            )}
-          >
-            {item.name}
-          </SmoothScrollLink>
+              key={item.name}
+              href={item.href}
+              className={cn(
+                "px-3 py-2 text-sm font-medium transition-colors",
+                activeSection === item.href.substring(1) ? "text-accent" : "text-foreground hover:text-accent",
+              )}
+            >
+              {item.name}
+            </SmoothScrollLink>
           ))}
-          <div className="ml-4">
+          <div className="ml-4 flex items-center space-x-2">
+            <LanguageSelector />
             <ModeToggle />
           </div>
         </nav>
 
         {/* Mobile Navigation Toggle */}
-        <div className="flex items-center md:hidden">
+        <div className="flex items-center md:hidden space-x-2">
+          <LanguageSelector />
           <ModeToggle />
           <Button variant="ghost" size="icon" className="ml-2" onClick={() => setIsOpen(!isOpen)}>
             {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
@@ -110,4 +114,3 @@ export default function Header() {
     </header>
   )
 }
-
