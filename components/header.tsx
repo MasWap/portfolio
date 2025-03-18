@@ -82,9 +82,6 @@ export default function Header() {
         <div className="flex items-center md:hidden space-x-2">
           <LanguageSelector />
           <ModeToggle />
-          <Button variant="ghost" size="icon" className="ml-2" onClick={() => setIsOpen(!isOpen)}>
-            {isOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
-          </Button>
         </div>
       </div>
 
