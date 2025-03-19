@@ -4,9 +4,10 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { Menu, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { ModeToggle } from "@/components/mode-toggle"
 import { cn } from "@/lib/utils"
 import SmoothScrollLink from "@/hooks/smooth-scroll-link";
-import { LanguageSelector, useTranslation } from "@/lib/translation"
+import { LanguageSelector, useTranslation } from "@/lib/translation" // Ajoutez cette ligne
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -73,12 +74,14 @@ export default function Header() {
           ))}
           <div className="ml-4 flex items-center space-x-2">
             <LanguageSelector />
+            <ModeToggle />
           </div>
         </nav>
 
         {/* Mobile Navigation Toggle */}
         <div className="flex items-center md:hidden space-x-2">
           <LanguageSelector />
+          <ModeToggle />
         </div>
       </div>
     </header>

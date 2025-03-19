@@ -4,27 +4,48 @@
 
 @layer base {
   :root {
-    /* Mode clair - Nouveaux tons harmonisés */
-    --background: 39 30% 95%;
-    --foreground: 24 30% 15%;
+    --background: 280 30% 98%;
+    --foreground: 240 10% 3.9%;
     --card: 0 0% 100%;
-    --card-foreground: 24 30% 15%;
+    --card-foreground: 240 10% 3.9%;
     --popover: 0 0% 100%;
-    --popover-foreground: 24 30% 15%;
-    --primary: 184 41% 74%;
-    --primary-foreground: 189 28% 20%;
-    --secondary: 43 76% 66%;
-    --secondary-foreground: 24 90% 15%;
-    --muted: 39 15% 90%;
-    --muted-foreground: 24 10% 40%;
-    --accent: 24 90% 38%;
-    --accent-foreground: 0 0% 98%;
+    --popover-foreground: 240 10% 3.9%;
+    --primary: 260 100% 88%;
+    --primary-foreground: 240 5.9% 10%;
+    --secondary: 270 100% 97%;
+    --secondary-foreground: 240 5.9% 10%;
+    --muted: 240 4.8% 95.9%;
+    --muted-foreground: 240 3.8% 46.1%;
+    --accent: 260 89% 78%;
+    --accent-foreground: 240 5.9% 10%;
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
-    --border: 39 15% 85%;
-    --input: 39 15% 85%;
-    --ring: 24 90% 38%;
+    --border: 240 5.9% 90%;
+    --input: 240 5.9% 90%;
+    --ring: 260 89% 78%;
     --radius: 0.5rem;
+  }
+
+  .dark {
+    --background: 260 20% 10%;
+    --foreground: 0 0% 98%;
+    --card: 260 20% 12%;
+    --card-foreground: 0 0% 98%;
+    --popover: 260 20% 12%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 260 100% 88%;
+    --primary-foreground: 260 20% 10%;
+    --secondary: 260 20% 16%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 260 20% 16%;
+    --muted-foreground: 260 10% 70%;
+    --accent: 260 89% 78%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 260 20% 20%;
+    --input: 260 20% 20%;
+    --ring: 260 89% 78%;
   }
 }
 
@@ -69,65 +90,4 @@
 .staggered-item.active {
   opacity: 1;
   transform: translateY(0);
-}
-
-/* Animation de la mer */
-.wave {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  height: 25px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%2364a2ad' fill-opacity='0.5' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-  background-repeat: repeat-x;
-  background-size: 1440px 320px;
-}
-
-.wave1 {
-  animation: wave 20s linear infinite;
-  z-index: 2;
-  opacity: 0.7;
-  animation-delay: 0s;
-  bottom: 0;
-}
-
-.wave2 {
-  animation: wave 15s linear infinite;
-  z-index: 1;
-  opacity: 0.5;
-  animation-delay: -5s;
-  bottom: 5px;
-}
-
-@keyframes wave {
-  0% {
-    background-position-x: 0;
-  }
-  100% {
-    background-position-x: 1440px;
-  }
-}
-
-@keyframes moveBoat {
-  0% {
-    left: -150px;
-  }
-  100% {
-    left: 100%;
-  }
-}
-
-.boat-container {
-  will-change: transform;
-  transform-origin: center bottom;
-  animation: floatBoat 3s ease-in-out infinite;
-}
-
-@keyframes floatBoat {
-  0%, 100% {
-    transform: translateY(0) rotate(-1deg);
-  }
-  50% {
-    transform: translateY(-8px) rotate(2deg);
-  }
 }

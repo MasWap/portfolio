@@ -10,7 +10,6 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { useScrollReveal } from "@/hooks/use-scroll-reveal"
 import SmoothScrollLink from "@/hooks/smooth-scroll-link"
-import SeaAnimation from "@/components/sea-animation";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert"
 import { AdaptiveSection } from '@/components/adaptive-section';
 import { useTranslation } from '@/lib/translation';
@@ -216,7 +215,6 @@ export default function Home() {
             </div>
           </div>
         </div>
-        <SeaAnimation />
       </AdaptiveSection>
 
       {/* About Section */}
